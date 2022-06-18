@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@EnableJpaAuditing
 public class PostRepositoryTest {
 
     @Autowired
@@ -133,6 +135,7 @@ public class PostRepositoryTest {
                         .build();
                 final List<Post> posts = List.of(firstPost, secondPost, thirdPost);
                 postRepository.saveAll(posts);
+                flushAndClear();
 
                 //when
                 final List<Post> foundPosts = postRepository.findAllOrderByCreatedAtDesc(pageRequest);
