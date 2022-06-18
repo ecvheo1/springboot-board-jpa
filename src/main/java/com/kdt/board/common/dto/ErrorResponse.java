@@ -4,6 +4,7 @@ import com.kdt.board.common.exception.ErrorCode;
 import org.springframework.validation.BindingResult;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ErrorResponse {
     private String message;
@@ -71,7 +72,7 @@ public class ErrorResponse {
                             error.getField(),
                             error.getRejectedValue() == null ? "" : error.getRejectedValue().toString(),
                             error.getDefaultMessage()))
-                    .toList();
+                    .collect(Collectors.toList());
         }
     }
 }

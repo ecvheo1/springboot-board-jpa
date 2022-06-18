@@ -4,6 +4,7 @@ import com.kdt.board.post.application.dto.response.PostResponseDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PostResponse {
 
@@ -85,7 +86,7 @@ public class PostResponse {
     public static List<PostResponse> listOf(List<PostResponseDto> postResponseDtos) {
         return postResponseDtos.stream()
                 .map(PostResponse::from)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public static PostResponse from(PostResponseDto postResponseDto) {
