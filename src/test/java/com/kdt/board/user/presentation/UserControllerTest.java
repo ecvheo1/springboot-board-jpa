@@ -10,9 +10,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -20,9 +22,13 @@ import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+@AutoConfigureRestDocs
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
 
@@ -178,7 +184,7 @@ public class UserControllerTest {
                 final HashMap<String, Object> requestMap = new HashMap<>();
                 requestMap.put("name", "test");
                 requestMap.put("email", "test@test.com");
-                requestMap.put("age", "10");
+                requestMap.put("age", 10);
                 requestMap.put("hobby", "test");
 
                 //when
@@ -186,7 +192,17 @@ public class UserControllerTest {
 
                 //then
                 verify(userService, times(1)).register(any(RegistrationUserRequestDto.class));
-                resultActions.andExpect(status().isCreated());
+                resultActions.andExpect(status().isCreated())
+                        .andDo(document("user-register",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestFields(
+                                        fieldWithPath("name").type(JsonFieldType.STRING).description("유저 이름"),
+                                        fieldWithPath("email").type(JsonFieldType.STRING).description("유저 이메일"),
+                                        fieldWithPath("age").type(JsonFieldType.NUMBER).description("유저 나이").optional(),
+                                        fieldWithPath("hobby").type(JsonFieldType.STRING).description("유저 취미").optional()
+                                )
+                        ));
             }
         }
 
